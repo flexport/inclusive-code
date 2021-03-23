@@ -1,0 +1,4 @@
+Flexport/InclusiveCode:
+  Description: "Warns on usage of flagged terms, suggests alternatives and allows for exceptions as configured."
+  Enabled: true
+  VersionAdded: "0.1.0"

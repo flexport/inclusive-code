@@ -1,0 +1,90 @@
+---
+flagged_terms:
+  # Key: flagged word, value: array of suggested alternatives, array of allowed terms
+  # The first item in the suggestions array will be used as the autocorrect term.
+
+  # Racial
+  whitelist:
+    suggestions:
+      - allowlist
+      - includelist
+    allowed: []
+  blacklist:
+    suggestions:
+      - blocklist
+      - excludelist
+    allowed: []
+  master:
+    suggestions:
+      - leader
+      - primary
+      - parent
+    allowed:
+      - master bill
+      - master air waybill
+      - master consol
+      - master shipment
+  slave:
+    suggestions:
+      - follower
+      - secondary
+      - replica
+    allowed: []
+  redline:
+    suggestions:
+      - priority line
+      - exception
+      - anomaly
+    allowed: []
+  grandfathered:
+    suggestions:
+      - exempt
+      - legacy
+    allowed: []
+
+  # Ableist
+  sanity check:
+    suggestions:
+      - check
+      - validity check
+    allowed: []
+  crippled:
+    suggestions:
+      - slowed
+      - overloaded
+    allowed: []
+  dummy:
+    suggestions:
+      - placeholder
+      - mock
+    allowed: []
+
+  # Gendered
+  " her ":
+    suggestions:
+      - " them "
+    allowed: []
+  " she ":
+    suggestions:
+      - " they "
+    allowed: []
+  " him ":
+    suggestions:
+      - " them "
+    allowed: []
+  " he ":
+    suggestions:
+      - " they "
+    allowed: []
+  man-in-the-middle:
+    suggestions:
+      - person-in-the-middle
+      - on-path attack
+    allowed: []
+
+  # Other
+  first-class citizen:
+    suggestions:
+      - first-class concern
+      - core concern
+    allowed: []
