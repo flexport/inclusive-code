@@ -60,6 +60,12 @@ flagged_terms:
     allowed: []
 
   # Gendered
+  man-in-the-middle:
+    suggestions:
+      - person-in-the-middle
+      - on-path attack
+    allowed: []
+  # Wrapping pronouns with whitespace to avoid overmatching
   " her ":
     suggestions:
       - " them "
@@ -75,11 +81,6 @@ flagged_terms:
   " he ":
     suggestions:
       - " they "
-    allowed: []
-  man-in-the-middle:
-    suggestions:
-      - person-in-the-middle
-      - on-path attack
     allowed: []
 
   # Other

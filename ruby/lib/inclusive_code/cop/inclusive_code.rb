@@ -26,7 +26,7 @@ module RuboCop
         MSG = "🚫 Use of non_inclusive word: `%<non_inclusive_word>s`. Consider using these suggested alternatives: `%<suggestions>s`.".freeze
 
         NON_INCLUSIVE_WORDS_ALTERNATIVES_HASH = YAML.load_file(File.expand_path(
-          "../../../../../inclusive_code_flagged_terms_alternatives.yml",
+          "../../../../../inclusive_code_flagged_terms.yml",
           __dir__,
         ))["flagged_terms"]
 
@@ -105,9 +105,8 @@ module RuboCop
         def autocorrect(arg_pair)
           word_to_correct = arg_pair.source
           word_to_correct_downcase = word_to_correct.downcase
-          if !NON_INCLUSIVE_WORDS_ALTERNATIVES_HASH.key?(word_to_correct_downcase) || NON_INCLUSIVE_WORDS_ALTERNATIVES_HASH[word_to_correct_downcase]["suggestions"].blank?
-            return
-          end
+          return if !NON_INCLUSIVE_WORDS_ALTERNATIVES_HASH.key?(word_to_correct_downcase)
+          return if NON_INCLUSIVE_WORDS_ALTERNATIVES_HASH[word_to_correct_downcase]["suggestions"].blank?
           corrected = NON_INCLUSIVE_WORDS_ALTERNATIVES_HASH[word_to_correct_downcase]["suggestions"][0]
 
           # Only respects case if it is capitalized or uniform (all upper or all lower)

@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.version = InclusiveCode::Flexport::VERSION
   spec.authors = ["Flexport Engineering"]
   spec.email = ["dev@flexport.com"]
-  spec.summary = "Inclusive Language Rubocop."
+  spec.summary = "Inclusive Language RuboCop."
   spec.description = ''
   spec.homepage = 'https://github.com/flexport/rubocop-flexport'
   spec.license = 'MIT'
