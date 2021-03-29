@@ -25,10 +25,7 @@ module RuboCop
 
         MSG = "🚫 Use of non_inclusive word: `%<non_inclusive_word>s`. Consider using these suggested alternatives: `%<suggestions>s`.".freeze
 
-        NON_INCLUSIVE_WORDS_ALTERNATIVES_HASH = YAML.load_file(File.expand_path(
-          "../../../../../inclusive_code_flagged_terms.yml",
-          __dir__,
-        ))["flagged_terms"]
+        NON_INCLUSIVE_WORDS_ALTERNATIVES_HASH = YAML.load_file(global_config_path)["flagged_terms"]
 
         ALL_NON_INCLUSIVE_WORDS = NON_INCLUSIVE_WORDS_ALTERNATIVES_HASH.keys
 
@@ -131,6 +128,10 @@ module RuboCop
             non_inclusive_word: non_inclusive_word,
             suggestions: NON_INCLUSIVE_WORDS_ALTERNATIVES_HASH[non_inclusive_word]["suggestions"].join(", "),
           )
+        end
+
+        def global_config_path
+          path = cop_config['GlobalCongifPath']
         end
       end
     end
