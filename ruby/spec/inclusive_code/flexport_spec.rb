@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe InclusiveCode::Flexport do
+RSpec.describe RuboCop::InclusiveCode do
   it 'has a version number' do
-    expect(InclusiveCode::Flexport::VERSION).not_to be nil
+    expect(RuboCop::InclusiveCode::VERSION).not_to be nil
   end
 end
