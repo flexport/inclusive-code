@@ -2,10 +2,10 @@
 
 require 'rubocop'
 
-require_relative 'inclusive_code/flexport'
-require_relative 'inclusive_code/flexport/version'
-require_relative 'inclusive_code/flexport/inject'
+require_relative 'rubocop/inclusive_code'
+require_relative 'rubocop/inclusive_code/version'
+require_relative 'rubocop/inclusive_code/inject'
 
-RuboCop::Flexport::Inject.defaults!
+RuboCop::InclusiveCode::Inject.defaults!
 
-require_relative 'inclusive_code/cop/inclusive_code'
+require_relative 'rubocop/cop/inclusive_code'

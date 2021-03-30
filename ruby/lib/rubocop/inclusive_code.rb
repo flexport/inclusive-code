@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'rubocop/flexport/version'
+require 'rubocop/inclusive_code/version'
 
-module InclusiveCode
-  module Flexport
+module RuboCop
+  module InclusiveCode
     class Error < StandardError; end
     PROJECT_ROOT = Pathname.new(__dir__).parent.parent.expand_path.freeze
     CONFIG_DEFAULT = PROJECT_ROOT.join('config', 'default.yml').freeze
