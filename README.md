@@ -1,7 +1,18 @@
 # inclusive-code
 
-## Usage
-### TODO: Add usage instructions
+## Installation
+We're currently only supporting Ruby. See the README in the ruby directory for steps to install the gem.
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/flexport/inclusive-code.
+This project is intended to be a safe, welcoming space for collaboration, and
+contributors are expected to adhere to the
+[Contributor Covenant](http://contributor-covenant.org) code of conduct.
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
 ## Style Guide
 The following is Flexport's policy for writing inclusive code and documentation. We encourage you to adopt a similar policy.
@@ -84,3 +95,6 @@ first-class citizen | First class concern/concept, core concern, built in, top-l
 #### Industry Term Exemption
 
 It occurs that some flagged terms are a part of deeply ingrained freight industry jargon.  For example, the ‘Master Bill of Lading’ is a core document and data model in ocean freight, and a ‘Segregation Order’ is a consolidation document. In the freight forwarding context, ‘Segregation Order’ has a meaning to our users and partners that ‘Separation Order’ does not. Whether for compliance purposes or for clarity/adoption, it is sometimes necessary to preserve uses of these terms in the codebase.  
+
+
+Portions of this page are reproduced from, or are modifications based on, work created and [shared by the Android Open Source Project](https://code.google.com/p/android/) and work created and [shared by Google](https://developers.google.com/readme/policies) and used according to terms described in the [Creative Commons 4.0 Attribution License](https://creativecommons.org/licenses/by/4.0/).
