@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
   subject(:cop) do
-    described_class.new(YAML.load_file(
+    described_class.new(nil, nil, YAML.load_file(
                           File.expand_path('../../../../inclusive_code_flagged_terms.yml', __dir__)
                         ))
   end
