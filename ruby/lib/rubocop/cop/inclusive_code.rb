@@ -27,7 +27,9 @@ module RuboCop
 
         MSG = '🚫 Use of non_inclusive word: `%<non_inclusive_word>s`. Consider using these suggested alternatives: `%<suggestions>s`.'.freeze
 
-        def initialize(source_file = nil, config = nil, options = nil)
+        def initialize(config = nil, options = nil, source_file = nil)
+          super(config, options)
+  
           source_file ||= YAML.load_file(cop_config['GlobalConfigPath'])
           @non_inclusive_words_alternatives_hash = source_file['flagged_terms']
           @all_non_inclusive_words = @non_inclusive_words_alternatives_hash.keys
@@ -42,7 +44,6 @@ module RuboCop
             ]
           end.to_h
           @allowed_regex = Regexp.new(@allowed.values.reject(&:blank?).join('|'), Regexp::IGNORECASE)
-          super(config, options)
         end
 
         def investigate(processed_source)
