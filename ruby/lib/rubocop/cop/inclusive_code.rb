@@ -96,6 +96,8 @@ module RuboCop
         end
 
         def autocorrect(arg_pair)
+          return if cop_config['DisableAutoCorrect']
+
           word_to_correct = arg_pair.source
           word_to_correct_downcase = word_to_correct.downcase
           return unless @non_inclusive_words_alternatives_hash.key?(word_to_correct_downcase)
