@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.email = ['dev@flexport.com']
   spec.summary = 'Inclusive Language RuboCop.'
   spec.description = ''
-  spec.homepage = 'https://github.com/flexport/rubocop-flexport'
+  spec.homepage = 'https://github.com/flexport/inclusive-code'
   spec.license = 'MIT'
   spec.files = Dir['{lib}/**/*.rb', 'config/default.yml', 'README.md']
   spec.require_paths = ['lib']
