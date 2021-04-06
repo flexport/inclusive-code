@@ -3,3 +3,4 @@ Flexport/InclusiveCode:
   Enabled: true
   VersionAdded: "0.1.0"
   GlobalConfigPath: ""
+  DisableAutoCorrect: false
