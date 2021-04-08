@@ -26,8 +26,11 @@ require:
 Flexport/InclusiveCode:
   Enabled: true
   GlobalConfigPath: 'app/constants/inclusive_code/inclusive_code_flagged_terms.yml' # or your path
+  DisableAutoCorrect: false
 ```
 
 You can run the cop on your entire codebase with `rubocop --only Flexport/InclusiveCode`. 
 
 You can run the cop on a specific file with `rubocop --only Flexport/InclusiveCode file_path`.
+
+If you want to add inline `rubocop:disable` or `rubocop:todo` comments on all offenses, set `DisableAutoCorrect: true` in your .rubocop.yml, and run `rubocop --only Flexport/InclusiveCode --auto-correct --disable-uncorrectable`.
