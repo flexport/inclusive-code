@@ -4,12 +4,12 @@ flagged_terms:
   # The first item in the suggestions array will be used as the autocorrect term.
 
   # Racial
-  whitelist:
+  "white[-_\\s]*list":
     suggestions:
       - allowlist
       - includelist
     allowed: []
-  blacklist:
+  "black[-_\\s]*list":
     suggestions:
       - blocklist
       - excludelist

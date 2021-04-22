@@ -61,19 +61,23 @@ module RuboCop
                 :scan,
                 scan_regex
               ).map { Regexp.last_match&.offset(0)&.first }
+
+              non_inclusive_words = line.scan /#{non_inclusive_word}/i
+
+              locations = locations.zip(non_inclusive_words).to_h
               next if locations.blank?
 
-              locations.each do |location|
+              locations.each do |location, word|
                 range = source_range(
                   processed_source.buffer,
                   line_number + 1,
                   location,
-                  non_inclusive_word.length
+                  word.length
                 )
                 add_offense(
                   range,
                   location: range,
-                  message: create_message(non_inclusive_word),
+                  message: create_message(word),
                   severity: SEVERITY
                 )
               end
@@ -99,11 +103,10 @@ module RuboCop
           return if cop_config['DisableAutoCorrect']
 
           word_to_correct = arg_pair.source
-          word_to_correct_downcase = word_to_correct.downcase
-          return unless @non_inclusive_words_alternatives_hash.key?(word_to_correct_downcase)
-          return if @non_inclusive_words_alternatives_hash[word_to_correct_downcase]['suggestions'].blank?
+          correction = correction_for_word(word_to_correct)
+          return if correction['suggestions'].blank?
 
-          corrected = @non_inclusive_words_alternatives_hash[word_to_correct_downcase]['suggestions'][0]
+          corrected = correction['suggestions'][0]
 
           # Only respects case if it is capitalized or uniform (all upper or all lower)
           to_upcase = word_to_correct == word_to_correct.upcase
@@ -128,11 +131,19 @@ module RuboCop
           (allowed + snake_case + pascal_case).join('|')
         end
 
+        def correction_for_word(word_to_correct)
+          _, correction = @non_inclusive_words_alternatives_hash.detect {|correction_key, _| Regexp.new(correction_key, Regexp::IGNORECASE).match? word_to_correct.downcase }
+
+          correction || {}
+        end
+
         def create_message(non_inclusive_word)
+          correction = correction_for_word(non_inclusive_word)
+
           format(
             MSG,
             non_inclusive_word: non_inclusive_word,
-            suggestions: @non_inclusive_words_alternatives_hash[non_inclusive_word]['suggestions'].join(', ')
+            suggestions: correction.fetch('suggestions') {[]}.join(', ')
           )
         end
       end

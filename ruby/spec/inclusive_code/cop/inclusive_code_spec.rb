@@ -17,8 +17,8 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
           <<~RUBY
             module Master
                    ^^^^^^ #{format(
-                    msg, 
-                    non_inclusive_word: 'master', 
+                    msg,
+                    non_inclusive_word: 'Master',
                     suggestions: words_hash['master']['suggestions'].join(', ')
                   )}
               Shipment = Struct.new
@@ -36,8 +36,8 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
           <<~RUBY
             # dummy
               ^^^^^ #{format(
-                msg, 
-                non_inclusive_word: 'dummy', 
+                msg,
+                non_inclusive_word: 'dummy',
                 suggestions: words_hash['dummy']['suggestions'].join(', ')
               )}
           RUBY
@@ -53,13 +53,13 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
           <<~RUBY
             puts "grandfathered MAN-IN-THE-MIDDLE"
                                 ^^^^^^^^^^^^^^^^^ #{format(
-                                  msg, 
-                                  non_inclusive_word: 'man-in-the-middle', 
+                                  msg,
+                                  non_inclusive_word: 'MAN-IN-THE-MIDDLE',
                                   suggestions: words_hash['man-in-the-middle']['suggestions'].join(', ')
                                 )}
                   ^^^^^^^^^^^^^ #{format(
-                    msg, 
-                    non_inclusive_word: 'grandfathered', 
+                    msg,
+                    non_inclusive_word: 'grandfathered',
                     suggestions: words_hash['grandfathered']['suggestions'].join(', ')
                   )}
           RUBY
@@ -77,8 +77,8 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
           <<~RUBY
             class MyInclusiveEngine
             ^ #{format(
-              msg, 
-              non_inclusive_word: 'master', 
+              msg,
+              non_inclusive_word: 'master',
               suggestions: words_hash['master']['suggestions'].join(', ')
             )}
               puts "Hooray for inclusion!"
@@ -129,14 +129,14 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
           <<~RUBY
             puts "master bill of lading master blacklist"
                                                ^^^^^^^^^ #{format(
-                                                msg, 
-                                                non_inclusive_word: 'blacklist', 
-                                                suggestions: words_hash['blacklist']['suggestions'].join(', ')
+                                                msg,
+                                                non_inclusive_word: 'blacklist',
+                                                suggestions: cop.send(:correction_for_word, 'blacklist')['suggestions'].join(', ')
                                               )}
                                         ^^^^^^ #{format(
-                                          msg, 
-                                          non_inclusive_word: 'master', 
-                                          suggestions: words_hash['master']['suggestions'].join(', ')
+                                          msg,
+                                          non_inclusive_word: 'master',
+                                          suggestions: cop.send(:correction_for_word, 'master')['suggestions'].join(', ')
                                         )}
             puts "master_air_waybill"
           RUBY
@@ -175,9 +175,9 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
     context 'when there are multiple offenses' do
       let(:source) do
         <<~RUBY
-          BLACKLIST_CODES = ["AF", "AO", "BO", "IQ", "NG", "PY", "KP"].freeze
-          private_constant :BLACKLIST_CODES
-          BLACKLIST_COUNTRIES = "blacklist_countries".freeze
+          BLACK_LIST_CODES = ["AF", "AO", "BO", "IQ", "NG", "PY", "KP"].freeze
+          private_constant :BLACK_LIST_CODES
+          BLACK_LIST_COUNTRIES = "blacklist_countries".freeze
         RUBY
       end
       let(:fixed_source) do
