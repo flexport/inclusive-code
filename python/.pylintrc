@@ -1,0 +1,9 @@
+[MASTER]
+
+# List of plugins (as comma separated values of python module names) to load,
+# usually to register additional checkers.
+load-plugins=inclusive_code
+
+[INCLUSIVE CODE]
+
+global-config-path=../inclusive_code_flagged_terms.yml
