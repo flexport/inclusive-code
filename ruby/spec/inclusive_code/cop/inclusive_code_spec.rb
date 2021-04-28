@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
   subject(:cop) do
     described_class.new(nil, nil, YAML.load_file(
-                          File.expand_path('../../../../inclusive_code_flagged_terms.yml', __dir__)
-                        ))
+                                    File.expand_path('../../../../inclusive_code_flagged_terms.yml', __dir__)
+                                  ))
   end
 
   let(:msg) { RuboCop::Cop::Flexport::InclusiveCode::MSG }
@@ -17,10 +19,10 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
           <<~RUBY
             module Master
                    ^^^^^^ #{format(
-                    msg,
-                    non_inclusive_word: 'Master',
-                    suggestions: words_hash['master']['suggestions'].join(', ')
-                  )}
+                     msg,
+                     non_inclusive_word: 'Master',
+                     suggestions: words_hash['master']['suggestions'].join(', ')
+                   )}
               Shipment = Struct.new
             end
           RUBY
@@ -92,6 +94,71 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
       end
     end
 
+    context 'when non-inclusive terms are present in an allowed file' do
+      let(:flagged_terms) do
+        {
+          'flagged_terms' => {
+            'rubocop' => {
+              'suggestions' => ['ruby_enforcement_service'],
+              'allowed' => [],
+              'allowed_files' => ['README.md', 'lib/rubocop/cop/inclusive_code.rb']
+            },
+            'other_offensive_term' => {
+              'suggestions' => ['non_offensive_terms'],
+              'allowed' => [],
+              'allowed_files' => []
+            }
+          }
+        }
+      end
+
+      subject(:cop) do
+        described_class.new(nil, nil, flagged_terms)
+      end
+
+      it 'can ignore offenses within the path of an allowed file while detecting the'\
+        'same offenses in the path of another file' do
+        source = <<~RUBY
+          puts "Hooray for inclusion!"
+          ^ #{format(
+            msg,
+            non_inclusive_word: 'rubocop',
+            suggestions: 'ruby_enforcement_service'
+          )}
+        RUBY
+
+        expect_offense(source, 'lib/rubocop/inclusive_code/version.rb')
+        expect_no_offenses(source.lines.first, 'lib/rubocop/cop/inclusive_code.rb')
+      end
+
+      it 'can ignore offenses in one file while detecting other offenses in the same file' do
+        source = <<~RUBY
+          puts "rubocop"
+          puts "other_offensive_term"
+                ^^^^^^^^^^^^^^^^^^^^ #{format(
+                  msg,
+                  non_inclusive_word: 'other_offensive_term',
+                  suggestions: 'non_offensive_terms'
+                )}
+        RUBY
+        expect_offense(source, 'README.md')
+      end
+
+      it 'does not detect offenses in an allowed filename' do
+        source = <<~RUBY
+          puts "rubocop"
+                ^^^^^^^ #{format(
+                  msg,
+                  non_inclusive_word: 'rubocop',
+                  suggestions: 'ruby_enforcement_service'
+                )}
+        RUBY
+        expect_offense(source, 'inclusive-code.gemspec')
+
+        expect_no_offenses(source.lines.first, 'README.md')
+      end
+    end
+
     context 'when no flagged terms are present' do
       context 'in some code' do
         let(:source) do
@@ -129,10 +196,10 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
           <<~RUBY
             puts "master bill of lading master blacklist"
                                                ^^^^^^^^^ #{format(
-                                                msg,
-                                                non_inclusive_word: 'blacklist',
-                                                suggestions: cop.send(:correction_for_word, 'blacklist')['suggestions'].join(', ')
-                                              )}
+                                                 msg,
+                                                 non_inclusive_word: 'blacklist',
+                                                 suggestions: cop.send(:correction_for_word, 'blacklist')['suggestions'].join(', ')
+                                               )}
                                         ^^^^^^ #{format(
                                           msg,
                                           non_inclusive_word: 'master',

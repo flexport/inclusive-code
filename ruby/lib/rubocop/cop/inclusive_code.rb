@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/core_ext/string'
 
 module RuboCop
@@ -23,46 +25,54 @@ module RuboCop
       class InclusiveCode < Cop
         include RangeHelp
 
-        SEVERITY = 'warning'.freeze
+        SEVERITY = 'warning'
 
-        MSG = '🚫 Use of non_inclusive word: `%<non_inclusive_word>s`. Consider using these suggested alternatives: `%<suggestions>s`.'.freeze
+        MSG = '🚫 Use of non_inclusive word: `%<non_inclusive_word>s`. Consider using these suggested alternatives: `%<suggestions>s`.'
 
         def initialize(config = nil, options = nil, source_file = nil)
           super(config, options)
-  
+
           source_file ||= YAML.load_file(cop_config['GlobalConfigPath'])
           @non_inclusive_words_alternatives_hash = source_file['flagged_terms']
           @all_non_inclusive_words = @non_inclusive_words_alternatives_hash.keys
-          @non_inclusive_words_regex = Regexp.new(
-            @all_non_inclusive_words.join('|'),
-            Regexp::IGNORECASE
-          )
-          @allowed = @all_non_inclusive_words.collect do |word|
-            [
-              word,
-              get_allowed_string(word)
-            ]
-          end.to_h
-          @allowed_regex = Regexp.new(@allowed.values.reject(&:blank?).join('|'), Regexp::IGNORECASE)
+          @non_inclusive_words_regex = concatenated_regex(@all_non_inclusive_words)
+          @allowed_terms = {}
+          @allowed_files = {}
+
+          @all_non_inclusive_words.each do |word|
+            @allowed_terms[word] = get_allowed_string(word)
+            @allowed_files[word] = source_file['flagged_terms'][word]['allowed_files'] || []
+          end
+          @allowed_regex = @allowed_terms.values.reject(&:blank?).join('|')
+
+          @allowed_regex = if @allowed_regex.blank?
+                             Regexp.new(/^$/)
+                           else
+                             Regexp.new(@allowed_regex, Regexp::IGNORECASE)
+                           end
         end
 
         def investigate(processed_source)
+          non_inclusive_words_for_current_file = @all_non_inclusive_words.reject do |non_inclusive_word|
+            Dir.glob("{#{@allowed_files[non_inclusive_word].join(',')}}").include?(processed_source.path)
+          end
+
           processed_source.lines.each_with_index do |line, line_number|
             next unless line.match(@non_inclusive_words_regex)
 
-            @all_non_inclusive_words.each do |non_inclusive_word|
-              allowed = @allowed[non_inclusive_word]
+            non_inclusive_words_for_current_file.each do |non_inclusive_word|
+              allowed = @allowed_terms[non_inclusive_word]
               scan_regex = if allowed.blank?
                              /(?=#{non_inclusive_word})/i
                            else
-                             /(?=#{non_inclusive_word})(?!(#{@allowed[non_inclusive_word]}))/i
+                             /(?=#{non_inclusive_word})(?!(#{@allowed_terms[non_inclusive_word]}))/i
                            end
               locations = line.enum_for(
                 :scan,
                 scan_regex
               ).map { Regexp.last_match&.offset(0)&.first }
 
-              non_inclusive_words = line.scan /#{non_inclusive_word}/i
+              non_inclusive_words = line.scan(/#{non_inclusive_word}/i)
 
               locations = locations.zip(non_inclusive_words).to_h
               next if locations.blank?
@@ -87,7 +97,7 @@ module RuboCop
           path = processed_source.path
           return if path.nil?
 
-          non_inclusive_words_match = path.match(@non_inclusive_words_regex)
+          non_inclusive_words_match = path.match(concatenated_regex(non_inclusive_words_for_current_file))
           return unless non_inclusive_words_match && !path.match(@allowed_regex)
 
           range = source_range(processed_source.buffer, 1, 0)
@@ -124,6 +134,13 @@ module RuboCop
 
         private
 
+        def concatenated_regex(non_inclusive_words)
+          Regexp.new(
+            non_inclusive_words.join('|'),
+            Regexp::IGNORECASE
+          )
+        end
+
         def get_allowed_string(non_inclusive_word)
           allowed = @non_inclusive_words_alternatives_hash[non_inclusive_word]['allowed']
           snake_case = allowed.map { |e| e.tr(' ', '_').underscore }
@@ -132,7 +149,9 @@ module RuboCop
         end
 
         def correction_for_word(word_to_correct)
-          _, correction = @non_inclusive_words_alternatives_hash.detect {|correction_key, _| Regexp.new(correction_key, Regexp::IGNORECASE).match? word_to_correct.downcase }
+          _, correction = @non_inclusive_words_alternatives_hash.detect do |correction_key, _|
+            Regexp.new(correction_key, Regexp::IGNORECASE).match?(word_to_correct.downcase)
+          end
 
           correction || {}
         end
@@ -143,7 +162,7 @@ module RuboCop
           format(
             MSG,
             non_inclusive_word: non_inclusive_word,
-            suggestions: correction.fetch('suggestions') {[]}.join(', ')
+            suggestions: correction.fetch('suggestions') { [] }.join(', ')
           )
         end
       end
