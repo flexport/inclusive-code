@@ -3,9 +3,13 @@
 /_yardoc/
 /coverage/
 /doc/
-/pkg/
+pkg/
 /spec/reports/
 /tmp/
+dist/
+__pycache__
+*.pyc
+*.gem
 
 # rspec failure tracking
 .rspec_status
