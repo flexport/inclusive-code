@@ -1,7 +1,14 @@
 # inclusive-code
+This project contains code linters to enforce customizable inclusive language style guides.
+
+## Supported Languages
+Language | Implementation
+-----|----------------------------
+Ruby | Rubocop
+Python | Pylint
 
 ## Installation
-We're currently only supporting Ruby. See the README in the ruby directory for steps to install the gem.
+See the README in each language directory for steps to install the linters.
 
 ## Contributing
 
