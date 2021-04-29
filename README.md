@@ -4,7 +4,7 @@ This project contains code linters to enforce customizable inclusive language st
 ## Supported Languages
 Language | Implementation
 -----|----------------------------
-Ruby | Rubocop
+Ruby | RuboCop
 Python | Pylint
 
 ## Installation
