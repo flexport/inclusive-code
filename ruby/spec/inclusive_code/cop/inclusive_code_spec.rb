@@ -116,8 +116,7 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
         described_class.new(nil, nil, flagged_terms)
       end
 
-      it 'can ignore offenses within the path of an allowed file while detecting the'\
-        'same offenses in the path of another file' do
+      it 'ignores filename offenses in an allowed file but does not ignore them in another file' do
         source = <<~RUBY
           puts "Hooray for inclusion!"
           ^ #{format(
@@ -127,11 +126,11 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
           )}
         RUBY
 
-        expect_offense(source, 'lib/rubocop/inclusive_code/version.rb')
         expect_no_offenses(source.lines.first, 'lib/rubocop/cop/inclusive_code.rb')
+        expect_offense(source, 'lib/rubocop/inclusive_code/version.rb')
       end
 
-      it 'can ignore offenses in one file while detecting other offenses in the same file' do
+      it 'allows offenses in an allowed file while detecting other offenses in the same file' do
         source = <<~RUBY
           puts "rubocop"
           puts "other_offensive_term"
@@ -142,20 +141,6 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
                 )}
         RUBY
         expect_offense(source, 'README.md')
-      end
-
-      it 'does not detect offenses in an allowed filename' do
-        source = <<~RUBY
-          puts "rubocop"
-                ^^^^^^^ #{format(
-                  msg,
-                  non_inclusive_word: 'rubocop',
-                  suggestions: 'ruby_enforcement_service'
-                )}
-        RUBY
-        expect_offense(source, 'inclusive-code.gemspec')
-
-        expect_no_offenses(source.lines.first, 'README.md')
       end
     end
 
