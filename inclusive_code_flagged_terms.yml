@@ -8,12 +8,10 @@ flagged_terms:
     suggestions:
       - allowlist
       - includelist
-    allowed: []
   "black[-_\\s]*list":
     suggestions:
       - blocklist
       - excludelist
-    allowed: []
   master:
     suggestions:
       - leader
@@ -29,63 +27,51 @@ flagged_terms:
       - follower
       - secondary
       - replica
-    allowed: []
   redline:
     suggestions:
       - priority line
       - exception
       - anomaly
-    allowed: []
   grandfathered:
     suggestions:
       - exempt
       - legacy
-    allowed: []
 
   # Ableist
   sanity check:
     suggestions:
       - check
       - validity check
-    allowed: []
   crippled:
     suggestions:
       - slowed
       - overloaded
-    allowed: []
   dummy:
     suggestions:
       - placeholder
       - mock
-    allowed: []
 
   # Gendered
   man-in-the-middle:
     suggestions:
       - person-in-the-middle
       - on-path attack
-    allowed: []
   # Wrapping pronouns with whitespace to avoid overmatching
   " her ":
     suggestions:
       - " them "
-    allowed: []
   " she ":
     suggestions:
       - " they "
-    allowed: []
   " him ":
     suggestions:
       - " them "
-    allowed: []
   " he ":
     suggestions:
       - " they "
-    allowed: []
 
   # Other
   first-class citizen:
     suggestions:
       - first-class concern
       - core concern
-    allowed: []

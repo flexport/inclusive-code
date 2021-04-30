@@ -46,15 +46,40 @@ Rules are added under the key `flagged_term` as follows:
 ```yaml
 ---
 flagged_terms:
-  another_harmful_term:
-    suggestions:
-      - an_appropriate_alternative
-    allowed: []
+  some_harmful_term: {}
 ```
 
 ### Specifying harmful terminology
 
-You can specify harmful terminology using basic keys (`another_harmful_term:`), string keys (`" his ":`), or using [regular expressions](https://rubular.com/r/HvcomHUBZ3KFCz) like `"white[-_\\s]*list":`. Please note that when specifying a regular expression, some characters (`\`) may need to be escaped.
+You can specify harmful terminology using basic keys (`another_harmful_term:`), string keys (`" his ":`), or using [regular expressions](https://rubular.com/r/HvcomHUBZ3KFCz) like `"white[-_\\s]*list":`. Please note that when specifying a regular expression, some characters (`\`) may need to be escaped. Examples:
+
+```yaml
+---
+flagged_terms:
+  "white[-_\\s]*list": {}
+  "black[-_\\s]*list": {}
+  " him ": {}
+  master: {}
+```
+
+### Suggestions and Autocorrect
+
+In a document titled [Terminology, Power and Offensive Language](https://tools.ietf.org/id/draft-knodel-terminology-01.html), the Internet Engineering Task Force (IETF) recommends that an editor or reviewer *should* "offer alternatives for offensive terminology as an important act of correcting larger editorial issues and clarifying technical concepts."
+
+As this gem does some of the work of an editor or reviewer, it is appropriate that it should allow for communicating better alternatives when it finds harmful technology.
+
+Here's how you can offer alternative suggestions:
+
+```yaml
+---
+flagged_terms:
+  some_harmful_term:
+    suggestions:
+      - some_thoughtful_alternative
+      - some_other_thoughtful_alternative
+```
+
+When using autocorrect, the first item in the suggestions array will be used as the autocorrect term.
 
 ### Allowing exceptions
 
@@ -86,18 +111,10 @@ You might want to do this when you wish to disallow some term, but you need to a
 flagged_terms:
   whitelist:
     suggestions:
-      - main
+      - allowlist
     allowed_files:
       - config/initializers/some_gem_config.rb
       - .some_gem/*
 ```
 
-This will would result in allowing offenses in any files returned by `Dir.glob("{config/initializers/some_gem_config.rb,.some_gem/*}")`
-
-### Suggestions and Autocorrect
-
-In a document titled [Terminology, Power and Offensive Language](https://tools.ietf.org/id/draft-knodel-terminology-01.html), the Internet Engineering Task Force (IETF) recommends that an editor or reviewer *should* "offer alternatives for offensive terminology as an important act of correcting larger editorial issues and clarifying technical concepts."
-
-As this gem does some of the work of an editor or reviewer, it is appropriate that it should allow for communicating better alternatives when it finds harmful terminology.
-
-When using autocorrect, the first item in the suggestions array will be used as the autocorrect term.
+This will result in allowing offenses in any files returned by `Dir.glob("{config/initializers/some_gem_config.rb,.some_gem/*}")`

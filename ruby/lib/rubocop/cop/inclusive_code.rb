@@ -27,7 +27,8 @@ module RuboCop
 
         SEVERITY = 'warning'
 
-        MSG = '🚫 Use of non_inclusive word: `%<non_inclusive_word>s`. Consider using these suggested alternatives: `%<suggestions>s`.'
+        FLAG_ONLY_MSG = '🚫 Use of non_inclusive word: `%<non_inclusive_word>s`.'
+        FULL_FLAG_MSG = "#{FLAG_ONLY_MSG} Consider using these suggested alternatives: `%<suggestions>s`."
 
         def initialize(config = nil, options = nil, source_file = nil)
           super(config, options)
@@ -142,7 +143,7 @@ module RuboCop
         end
 
         def get_allowed_string(non_inclusive_word)
-          allowed = @non_inclusive_words_alternatives_hash[non_inclusive_word]['allowed']
+          allowed = @non_inclusive_words_alternatives_hash[non_inclusive_word].fetch('allowed') { [] }
           snake_case = allowed.map { |e| e.tr(' ', '_').underscore }
           pascal_case = snake_case.map(&:camelize)
           (allowed + snake_case + pascal_case).join('|')
@@ -158,11 +159,12 @@ module RuboCop
 
         def create_message(non_inclusive_word)
           correction = correction_for_word(non_inclusive_word)
+          suggestions = correction.fetch('suggestions') { [] }.join(', ')
 
           format(
-            MSG,
+            suggestions.present? ? FULL_FLAG_MSG : FLAG_ONLY_MSG,
             non_inclusive_word: non_inclusive_word,
-            suggestions: correction.fetch('suggestions') { [] }.join(', ')
+            suggestions: suggestions
           )
         end
       end
