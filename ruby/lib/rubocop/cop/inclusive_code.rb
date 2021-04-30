@@ -63,11 +63,10 @@ module RuboCop
 
             non_inclusive_words_for_current_file.each do |non_inclusive_word|
               allowed = @allowed_terms[non_inclusive_word]
-              scan_regex = if allowed.blank?
-                             /(?=#{non_inclusive_word})/i
-                           else
-                             /(?=#{non_inclusive_word})(?!(#{@allowed_terms[non_inclusive_word]}))/i
-                           end
+              scan_regex = /(?=#{non_inclusive_word})/i
+              if allowed.present?
+                line = line.gsub(/(#{allowed})/i){ |match| '*' * match.size }
+              end
               locations = line.enum_for(
                 :scan,
                 scan_regex
