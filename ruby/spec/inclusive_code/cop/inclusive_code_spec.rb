@@ -254,7 +254,7 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
       end
     end
 
-    context 'and the allowed term does not start with the non-inclusive language' do
+    context 'when the flagged term is not at the start of the allowed term' do
       let(:source) do
         <<~RUBY
             puts "the allowed some_euphemism"
