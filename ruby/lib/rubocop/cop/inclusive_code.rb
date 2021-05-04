@@ -30,6 +30,8 @@ module RuboCop
         FLAG_ONLY_MSG = '🚫 Use of non_inclusive word: `%<non_inclusive_word>s`.'
         FULL_FLAG_MSG = "#{FLAG_ONLY_MSG} Consider using these suggested alternatives: `%<suggestions>s`."
 
+        ALLOWED_TERM_MASK_CHAR = '*'.freeze
+
         def initialize(config = nil, options = nil, source_file = nil)
           super(config, options)
 
@@ -65,7 +67,7 @@ module RuboCop
               allowed = @allowed_terms[non_inclusive_word]
               scan_regex = /(?=#{non_inclusive_word})/i
               if allowed.present?
-                line = line.gsub(/(#{allowed})/i){ |match| '*' * match.size }
+                line = line.gsub(/(#{allowed})/i){ |match| ALLOWED_TERM_MASK_CHAR * match.size }
               end
               locations = line.enum_for(
                 :scan,
