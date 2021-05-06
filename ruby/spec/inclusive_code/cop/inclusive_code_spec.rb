@@ -1,13 +1,16 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
   subject(:cop) do
     described_class.new(nil, nil, YAML.load_file(
-                          File.expand_path('../../../../inclusive_code_flagged_terms.yml', __dir__)
-                        ))
+                                    File.expand_path('../../../../inclusive_code_flagged_terms.yml', __dir__)
+                                  ))
   end
 
-  let(:msg) { RuboCop::Cop::Flexport::InclusiveCode::MSG }
+  let(:msg) { RuboCop::Cop::Flexport::InclusiveCode::FULL_FLAG_MSG }
+  let(:msg_without_suggestions) { RuboCop::Cop::Flexport::InclusiveCode::FLAG_ONLY_MSG }
   let(:words_hash) { cop.instance_variable_get('@non_inclusive_words_alternatives_hash') }
 
   describe 'inclusive code' do
@@ -17,10 +20,10 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
           <<~RUBY
             module Master
                    ^^^^^^ #{format(
-                    msg,
-                    non_inclusive_word: 'Master',
-                    suggestions: words_hash['master']['suggestions'].join(', ')
-                  )}
+                     msg,
+                     non_inclusive_word: 'Master',
+                     suggestions: words_hash['master']['suggestions'].join(', ')
+                   )}
               Shipment = Struct.new
             end
           RUBY
@@ -90,6 +93,109 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
           expect_offense(source, file)
         end
       end
+
+      context 'configured without any alternative suggestions' do
+        let(:source) do
+          <<~RUBY
+            "Without knowing to avoid euphemisms or patronizing terms,
+            we have instead used some_euphemism."
+                                 ^^^^^^^^^^^^^^ #{format(
+                                   msg_without_suggestions,
+                                   non_inclusive_word: 'some_euphemism'
+                                 )}
+          RUBY
+        end
+
+        subject(:cop) do
+          described_class.new(nil, nil, {
+            'flagged_terms' => {
+              'some_euphemism' => {
+                'allowed' => []
+              }
+            }
+          })
+        end
+
+        it 'does add offenses' do
+          expect_offense(source)
+        end
+      end
+
+      context 'without any allowed value' do
+        let(:source) do
+          <<~RUBY
+            "Without knowing to avoid euphemisms or patronizing terms,
+            we have instead used some_euphemism."
+                                 ^^^^^^^^^^^^^^ #{format(
+                                   msg_without_suggestions,
+                                   non_inclusive_word: 'some_euphemism'
+                                 )}
+          RUBY
+        end
+
+        subject(:cop) do
+          described_class.new(nil, nil, {
+            'flagged_terms' => {
+              'some_euphemism' => {
+              }
+            }
+          })
+        end
+
+        it 'does add offenses' do
+          expect_offense(source)
+        end
+      end
+    end
+
+    context 'when non-inclusive terms are present in an allowed file' do
+      let(:flagged_terms) do
+        {
+          'flagged_terms' => {
+            'rubocop' => {
+              'suggestions' => ['ruby_enforcement_service'],
+              'allowed' => [],
+              'allowed_files' => ['README.md', 'lib/rubocop/cop/inclusive_code.rb']
+            },
+            'other_offensive_term' => {
+              'suggestions' => ['non_offensive_terms'],
+              'allowed' => [],
+              'allowed_files' => []
+            }
+          }
+        }
+      end
+
+      subject(:cop) do
+        described_class.new(nil, nil, flagged_terms)
+      end
+
+      it 'ignores filename offenses in an allowed file but does not ignore them in another file' do
+        source = <<~RUBY
+          puts "Hooray for inclusion!"
+          ^ #{format(
+            msg,
+            non_inclusive_word: 'rubocop',
+            suggestions: 'ruby_enforcement_service'
+          )}
+        RUBY
+
+        expect_no_offenses(source.lines.first, 'lib/rubocop/cop/inclusive_code.rb')
+        expect_offense(source, 'lib/rubocop/inclusive_code/version.rb')
+      end
+
+      it 'allows offenses in an allowed file while detecting other offenses in the same file' do
+        source = <<~RUBY
+          puts "rubocop"
+          puts "other_offensive_term"
+                ^^^^^^^^^^^^^^^^^^^^ #{format(
+                  msg,
+                  non_inclusive_word: 'other_offensive_term',
+                  suggestions: 'non_offensive_terms'
+                )}
+        RUBY
+        expect_offense(source, 'README.md')
+      end
     end
 
     context 'when no flagged terms are present' do
@@ -129,10 +235,10 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
           <<~RUBY
             puts "master bill of lading master blacklist"
                                                ^^^^^^^^^ #{format(
-                                                msg,
-                                                non_inclusive_word: 'blacklist',
-                                                suggestions: cop.send(:correction_for_word, 'blacklist')['suggestions'].join(', ')
-                                              )}
+                                                 msg,
+                                                 non_inclusive_word: 'blacklist',
+                                                 suggestions: cop.send(:correction_for_word, 'blacklist')['suggestions'].join(', ')
+                                               )}
                                         ^^^^^^ #{format(
                                           msg,
                                           non_inclusive_word: 'master',
@@ -191,6 +297,30 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
       it 'corrects all offenses' do
         new_source = autocorrect_source(source)
         expect(new_source).to eq(fixed_source)
+      end
+    end
+
+    context 'when there are no suggested alternatives' do
+      let(:source) do
+        <<~RUBY
+          Without knowing to avoid euphemisms or patronizing terms,
+          we have instead used some_euphemism.
+        RUBY
+      end
+
+      subject(:cop) do
+        described_class.new(nil, nil, {
+          'flagged_terms' => {
+            'some_euphemism' => {
+              'allowed' => []
+            }
+          }
+        })
+      end
+
+      it 'does not alter the source' do
+        new_source = autocorrect_source(source)
+        expect(new_source).to eq(source)
       end
     end
   end
