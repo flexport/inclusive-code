@@ -253,6 +253,28 @@ RSpec.describe RuboCop::Cop::Flexport::InclusiveCode do
         end
       end
     end
+
+    context 'when the flagged term is not at the start of the allowed term' do
+      let(:source) do
+        <<~RUBY
+            puts "the allowed some_euphemism"
+        RUBY
+      end
+
+      subject(:cop) do
+        described_class.new(nil, nil, {
+          'flagged_terms' => {
+            'some_euphemism' => {
+              'allowed' => ['allowed some_euphemism']
+            }
+          }
+        })
+      end
+
+      it 'does not add offenses' do
+        expect_no_offenses(source)
+      end
+    end
   end
 
   describe '#autocorrect' do
