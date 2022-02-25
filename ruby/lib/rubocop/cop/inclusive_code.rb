@@ -34,8 +34,10 @@ module RuboCop
 
         def initialize(config = nil, options = nil, source_file = nil)
           super(config, options)
-
-          source_file ||= YAML.load_file(cop_config['GlobalConfigPath'])
+          
+          path = cop_config['GlobalConfigPath']
+          path = File.join(File.dirname(config.loaded_path), cop_config['GlobalConfigPath']) unless File.file?(path)
+          source_file ||= YAML.load_file(path)
           @non_inclusive_words_alternatives_hash = source_file['flagged_terms']
           @all_non_inclusive_words = @non_inclusive_words_alternatives_hash.keys
           @non_inclusive_words_regex = concatenated_regex(@all_non_inclusive_words)
